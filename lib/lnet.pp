@@ -386,7 +386,8 @@ type
 
     procedure CallAction; override;
 
-    procedure Disconnect(const Forced: Boolean = True); override;
+    procedure Disconnect(const Forced: Boolean = True); override; overload;
+    procedure Disconnect(aSocket: TLSocket; const Forced: Boolean = True); overload;
    public
     property Connecting: Boolean read GetConnecting;
     property OnAccept: TLSocketEvent read FOnAccept write FOnAccept;
@@ -1438,6 +1439,16 @@ begin
   FIterator := nil;
 end;
 
+procedure TLTcp.Disconnect(aSocket: TLSocket; const Forced: Boolean);
+begin
+  aSocket.Disconnect(Forced);
+  if not (aSocket.ConnectionStatus = scConnected) then
+  begin
+    DisconnectEvent(aSocket);
+    aSocket.Free;
+  end;
+end;
+
 procedure TLTcp.CallAction;
 begin
   if Assigned(FEventer) then
@@ -1508,11 +1519,6 @@ begin
         FSession.ReceiveEvent(aSocket)
       else
         ReceiveEvent(aSocket);
-
-      if not (FConnectionStatus = scConnected) then begin
-        DisconnectEvent(aSocket);
-        aSocket.Free;
-      end;
     end;
   end;
 end;
