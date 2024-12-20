@@ -1445,7 +1445,7 @@ begin
   if not (aSocket.ConnectionStatus = scConnected) then
   begin
     DisconnectEvent(aSocket);
-    aSocket.Free;
+//    aSocket.Free;
   end;
 end;
 
@@ -1519,7 +1519,7 @@ begin
         FSession.ReceiveEvent(aSocket)
       else
         ReceiveEvent(aSocket);
-      if not (FConnectionStatus = scConnected) then begin
+      if not (FConnectionStatus = scConnected) and (Handle <> -1) then begin
               DisconnectEvent(aSocket);
               aSocket.Free;
             end;
